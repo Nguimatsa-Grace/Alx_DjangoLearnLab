@@ -1,14 +1,16 @@
-### Update Operation
+Update Operation
 
-**Objective:** Update the title of "1984" to "Nineteen Eighty-Four" and save the changes.
+Objective: Update the title of "1984" to "Nineteen Eighty-Four" and save the changes.
 
-**Python Command (to be run in Django Shell):**
-```python
+Python Command (to be run in Django Shell):
+
 from bookshelf.models import Book
-book_to_update = Book.objects.get(pk=1)
-book_to_update.title = "Nineteen Eighty-Four"
-book_to_update.save()
-print(book_to_update.title)
+book = Book.objects.get(pk=1)
+book.title = "Nineteen Eighty-Four"
+book.save()
+print(book.title)
+
+
 Expected Output:
 
 # Output:
