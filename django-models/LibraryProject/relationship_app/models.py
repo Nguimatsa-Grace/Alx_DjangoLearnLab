@@ -1,7 +1,7 @@
-# relationship_app/models.py (Complete file for RBAC task)
+# relationship_app/models.py (Correct and Consolidated)
 
 from django.db import models
-from django.contrib.auth.models import User # <-- REQUIRED: Import User model for linking
+from django.contrib.auth.models import User 
 
 # --- Existing Models ---
 
@@ -11,23 +11,29 @@ class Author(models.Model):
 
 class Book(models.Model):
     title = models.CharField(max_length=200)
-    # ForeignKey: One Author to Many Books
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
+    
     def __str__(self): return self.title
+
+    # --- NEW: Custom Permissions (Task 4) ---
+    class Meta:
+        permissions = [
+            ("can_add_book", "Can add a new book entry"),
+            ("can_change_book", "Can edit existing book entries"),
+            ("can_delete_book", "Can delete book entries"),
+        ]
 
 class Library(models.Model):
     name = models.CharField(max_length=100)
-    # ManyToManyField: Many Libraries to Many Books
     books = models.ManyToManyField(Book)
     def __str__(self): return self.name
 
 class Librarian(models.Model):
     name = models.CharField(max_length=100)
-    # OneToOneField: One Library to One Librarian
     library = models.OneToOneField(Library, on_delete=models.CASCADE)
     def __str__(self): return self.name
 
-# --- NEW: UserProfile for Role-Based Access Control ---
+# --- NEW: UserProfile for Role-Based Access Control (Task 3) ---
 
 class UserProfile(models.Model):
     # Predefined choices for user roles
@@ -36,7 +42,6 @@ class UserProfile(models.Model):
         ('Librarian', 'Librarian'),
         ('Member', 'Member'),
     )
-
     # One-to-One link to Django's built-in User model
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     

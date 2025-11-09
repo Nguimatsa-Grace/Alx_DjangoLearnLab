@@ -92,3 +92,36 @@ def librarian_view(request):
 def member_view(request):
     """View accessible only to Member users."""
     return render(request, 'relationship_app/member_view.html', {'role': 'Member'})
+# relationship_app/views.py (New views to add to the end of the file)
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import permission_required # <-- NEW IMPORT
+
+# ... (Existing views and RBAC functions above this line) ...
+
+# --- Permission-Secured Views ---
+
+@permission_required('relationship_app.can_add_book', login_url='/login/')
+def book_add(request):
+    """View to handle adding a new book, secured by custom permission."""
+    # In a real app, this would handle form submission
+    return render(request, 'relationship_app/book_form.html', {'action': 'Add'})
+
+
+@permission_required('relationship_app.can_change_book', login_url='/login/')
+def book_edit(request, pk):
+    """View to handle editing an existing book, secured by custom permission."""
+    book = get_object_or_404(Book, pk=pk)
+    # In a real app, this would handle form submission
+    return render(request, 'relationship_app/book_form.html', {'action': 'Edit', 'book': book})
+
+
+@permission_required('relationship_app.can_delete_book', login_url='/login/')
+def book_delete(request, pk):
+    """View to handle deleting a book, secured by custom permission."""
+    book = get_object_or_404(Book, pk=pk)
+    if request.method == 'POST':
+        book.delete()
+        return redirect('relationship_app:book_list')
+    # In a real app, this would show a confirmation page
+    return render(request, 'relationship_app/book_confirm_delete.html', {'book': book})
