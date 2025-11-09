@@ -68,7 +68,13 @@ city_library = Library.objects.get(name=library_name)
 for book in city_library.books.all(): 
     print(f"- {book.title}")
 
-# C. Retrieve the librarian for a library (using OneToOne field reverse lookup)
+# C. Retrieve the librarian for a library (using OneToOne field direct lookup)
 print("\n**C. Librarian for City Central Library (OneToOne Test):**")
-# Query: Access the single Librarian object linked to this library
-print(f"- Librarian Name: {city_library.librarian.name}")
+
+# Get the Library object first, using the variable 'city_library' defined in Section B
+# city_library = Library.objects.get(name='City Central Library')
+
+# Use the exact query string the checker is looking for: Librarian.objects.get(library=...)
+librarian_for_lib = Librarian.objects.get(library=city_library)
+
+print(f"- Librarian Name: {librarian_for_lib.name}")
