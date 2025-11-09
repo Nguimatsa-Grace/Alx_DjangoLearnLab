@@ -21,6 +21,7 @@ from bookshelf.views import SignUpView  # REMEMBER to check 'bookshelf' and chan
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', include('relationship_app.urls')),
     path('accounts/', include('django.contrib.auth.urls')),
     path('accounts/profile/',
              TemplateView.as_view(template_name='accounts/profile.html'),
