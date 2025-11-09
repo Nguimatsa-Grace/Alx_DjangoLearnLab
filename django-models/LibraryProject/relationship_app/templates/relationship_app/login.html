@@ -1,0 +1,34 @@
+{% load static %} <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <h1>Login</h1>
+    ```
+
+---
+
+## ☁️ Step 4: Test and Push (Git Bash)
+
+### 1. Test Authentication
+
+1.  **Run the Server:** You must be in the `django-models/LibraryProject` folder: `python manage.py runserver`
+2.  **Test Registration:** Go to `http://127.0.0.1:8000/register/` and create a user.
+3.  **Test Login:** Go to `http://127.0.0.1:8000/login/` and log in with the new user credentials.
+4.  **Test Logout:** Go to `http://127.0.0.1:8000/logout/` (or navigate to it after a successful login).
+
+### 2. Commit and Push
+
+After confirming the authentication features work, run these commands from the repository root (`~/Alx_DjangoLearnLab (main)`):
+
+| Action | Command to Write |
+| :--- | :--- |
+| **Go back** to Repo Root. | `cd ..` then `cd ..` |
+| **Stage Changes** | `git add django-models` |
+| **Commit Changes** | `git commit -m "Feature: Added User Authentication (Login, Logout, Register)"` |
+| **Push to GitHub** | `git push origin main` |
+
+Would you like to start by creating the **`forms.py`** file in VS Code?
