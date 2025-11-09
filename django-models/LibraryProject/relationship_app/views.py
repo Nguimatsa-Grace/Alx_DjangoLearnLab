@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test # <-
 from django.contrib.auth import login 
 from django.contrib.auth.forms import UserCreationForm 
 from .models import Book, Library, Author, Librarian, UserProfile # <-- RESTORED: UserProfile added
+from .models import Library
 from .forms import CustomUserCreationForm # <-- RESTORED
 from django.contrib.auth import views as auth_views 
 
