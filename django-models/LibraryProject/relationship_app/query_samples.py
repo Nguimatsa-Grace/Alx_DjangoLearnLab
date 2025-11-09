@@ -1,0 +1,60 @@
+# relationship_app/query_samples.py
+
+import os
+import django
+
+# Setup the Django environment (Crucial for running outside manage.py shell)
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'LibraryProject.settings') 
+django.setup()
+
+from relationship_app.models import Author, Book, Library, Librarian
+
+print("--- Starting Data Setup and Cleanup ---")
+# Clear existing data for a clean test
+Author.objects.all().delete()
+Library.objects.all().delete()
+Book.objects.all().delete()
+Librarian.objects.all().delete()
+
+# --- Data Setup ---
+# Create Authors
+author1 = Author.objects.create(name='Jane Austen')
+author2 = Author.objects.create(name='George Orwell')
+
+# Create Books (ForeignKey is set here)
+book1 = Book.objects.create(title='Pride and Prejudice', author=author1)
+book2 = Book.objects.create(title='Sense and Sensibility', author=author1)
+book3 = Book.objects.create(title='1984', author=author2)
+book4 = Book.objects.create(title='Animal Farm', author=author2)
+
+# Create Library
+library1 = Library.objects.create(name='City Central Library')
+
+# Link Books to Library (ManyToMany is set here)
+library1.books.add(book1, book3) 
+
+# Create Librarian (OneToOne is set here)
+librarian1 = Librarian.objects.create(name='Alex Johnson', library=library1) 
+
+print("--- Data Setup Complete ---")
+
+# --- Query Implementations ---
+
+# A. Query all books by a specific author (using ForeignKey reverse lookup)
+print("\n**A. Books by Jane Austen (ForeignKey Test):**")
+jane_austen = Author.objects.get(name='Jane Austen')
+# Query: Get all books related to this author object
+for book in jane_austen.book_set.all(): 
+    print(f"- {book.title}")
+
+# B. List all books in a library (using ManyToMany field)
+print("\n**B. Books in City Central Library (ManyToMany Test):**")
+city_library = Library.objects.get(name='City Central Library')
+# Query: Access the collection of books linked to this library
+for book in city_library.books.all(): 
+    print(f"- {book.title}")
+
+# C. Retrieve the librarian for a library (using OneToOne field reverse lookup)
+print("\n**C. Librarian for City Central Library (OneToOne Test):**")
+# Query: Access the single Librarian object linked to this library
+print(f"- Librarian Name: {city_library.librarian.name}")
