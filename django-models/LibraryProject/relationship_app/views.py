@@ -1,7 +1,7 @@
 # relationship_app/views.py
 
 from django.shortcuts import render # Needed for the function-based view
-from django.views.generic import DetailView # Needed for the class-based view
+from django.views.generic.detail import DetailView # Needed for the class-based view
 # FIX: Ensure all models, especially Library, are imported from .models
 from .models import Book, Library, Author, Librarian 
 
