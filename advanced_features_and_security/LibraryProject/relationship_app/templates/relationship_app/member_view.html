@@ -1,0 +1,8 @@
+{% extends "relationship_app/base.html" %}
+
+{% block content %}
+    <h1 style="color: red;">Welcome, Admin! Access Granted.</h1>
+    <p>User Role: {{ role }}</p>
+    <p>You can see this because you passed the @user_passes_test(is_admin) check.</p>
+    <a href="{% url 'logout' %}">Logout</a>
+{% endblock content %}
