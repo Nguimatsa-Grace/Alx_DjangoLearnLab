@@ -6,7 +6,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 # Quick-start development settings - unsuitable for production
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-m_k8i(v0t+3w%3a^@b0v3p8*s53y_e*a^3k6g3-d-2s8r5-h$'
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -14,9 +13,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
-
 INSTALLED_APPS = [
     'core_security',
     
@@ -50,9 +47,7 @@ ROOT_URLCONF = 'core_config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        # BEST PRACTICE: Look for project-wide templates in a 'templates' folder
         'DIRS': [BASE_DIR / 'templates'], 
-        
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -65,9 +60,7 @@ TEMPLATES = [
     },
 ]
 
-# CRITICAL FIX: The WSGI application path must use the new folder name
 WSGI_APPLICATION = 'core_config.wsgi.application'
-
 
 # Database
 DATABASES = {
@@ -115,29 +108,22 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # =======================================================
 # --- CUSTOM USER MODEL & MEDIA CONFIGURATION (CRITICAL) ---
 # =======================================================
-
-# Media configuration for user-uploaded files (like profile photos)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # =======================================================
 # --- TWO-FACTOR AUTHENTICATION (2FA) CONFIGURATION (CRITICAL) ---
 # =======================================================
-# Use two_factor's custom authentication backend
 AUTHENTICATION_BACKENDS = [
     'two_factor.backends.TwoFactorBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
 
-# We are using the 'account/' prefix in urls.py
 LOGIN_URL = 'two_factor:login'
 LOGIN_REDIRECT_URL = 'security_home' 
-
-# Define a custom user model name for the package
-# FIX: Must point to the new location 'bookshelf'
 TWO_FACTOR_CUSTOM_MODEL = 'bookshelf.CustomUser'
 SILENCED_SYSTEM_CHECKS = ["urls.E004"] 
 
 # Configure Django to use the CustomUser model for authentication
-# MUST be at the end of the file to prevent import errors!
+# CRITICAL: This line defines the custom user model location
 AUTH_USER_MODEL = 'bookshelf.CustomUser'
