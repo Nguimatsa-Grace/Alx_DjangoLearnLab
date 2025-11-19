@@ -37,3 +37,8 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return self.username
+    # LibraryProject/bookshelf/models.py 
+
+# ... (rest of the code)
+
+# Final check comment to force update
