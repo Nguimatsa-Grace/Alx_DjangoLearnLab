@@ -15,7 +15,7 @@ ALLOWED_HOSTS = []
 
 # Application definition
 INSTALLED_APPS = [
-    'core_security',
+
     
     # --- TWO-FACTOR AUTHENTICATION APPS ---
     'two_factor',

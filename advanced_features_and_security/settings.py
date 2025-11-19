@@ -134,3 +134,4 @@ AUTH_USER_MODEL = 'users.CustomUser'
 MEDIA_URL = '/media/'
 # MEDIA_ROOT points to a 'media' directory outside the project settings folder
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+AUTH_USER_MODEL = 'bookshelf.CustomUser'
