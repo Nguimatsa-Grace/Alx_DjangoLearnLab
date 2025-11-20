@@ -10,7 +10,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-m_e#5p*5x@h*^2*@+y_1*@*8@2e*c@t9r+9*c@i5r@f#@x%i&'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False # Must be False for production and security settings to be fully effective
+DEBUG = False 
 
 # Required for DEBUG=False
 ALLOWED_HOSTS = ['*']
@@ -33,7 +33,6 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    # SecurityMiddleware should be at the top
     'django.middleware.security.SecurityMiddleware', 
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -43,7 +42,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-# Update to the new directory name (LibraryProject instead of config)
 ROOT_URLCONF = 'LibraryProject.project_urls_fixed'
 
 TEMPLATES = [
@@ -129,11 +127,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Step 1: Configure Django for HTTPS Support
 # SECURE_SSL_REDIRECT = True ensures all non-HTTPS requests are redirected to HTTPS.
-# NOTE: This setting requires your web server (Nginx/Apache) to be configured for SSL.
 SECURE_SSL_REDIRECT = True 
 
 # SECURE_HSTS_SECONDS enables HTTP Strict Transport Security (HSTS). 
-# This tells browsers (for 1 year, 31536000 seconds) to only access the site via HTTPS.
 SECURE_HSTS_SECONDS = 31536000
 
 # SECURE_HSTS_INCLUDE_SUBDOMAINS applies the HSTS policy to all subdomains.
@@ -142,21 +138,19 @@ SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 # SECURE_HSTS_PRELOAD allows the site to be submitted to browser HSTS preload lists.
 SECURE_HSTS_PRELOAD = True
 
-# Step 2: Enforce Secure Cookies (Already set in Task 2, confirmed here)
-# CSRF_COOKIE_SECURE ensures the CSRF token is only sent over HTTPS.
-CSRF_COOKIE_SECURE = True 
+# 🚨 CRITICAL FIX: Required when Django runs behind a reverse proxy (like Nginx/Load Balancer).
+# This tells Django to trust the X-Forwarded-Proto header, which correctly identifies 
+# the original request as HTTPS, allowing SECURE_SSL_REDIRECT to work properly.
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
-# SESSION_COOKIE_SECURE ensures the session cookie is only sent over HTTPS.
+
+# Step 2: Enforce Secure Cookies
+CSRF_COOKIE_SECURE = True 
 SESSION_COOKIE_SECURE = True 
 
-# Step 3: Implement Secure Headers (Already set in Task 2, confirmed here)
-# SECURE_BROWSER_XSS_FILTER enables the browser's built-in XSS filter.
+# Step 3: Implement Secure Headers
 SECURE_BROWSER_XSS_FILTER = True 
-
-# SECURE_CONTENT_TYPE_NOSNIFF prevents browsers from MIME-sniffing (protects against XSS).
 SECURE_CONTENT_TYPE_NOSNIFF = True
-
-# X_FRAME_OPTIONS prevents the site from being embedded in an iframe (Clickjacking protection).
 X_FRAME_OPTIONS = 'DENY' 
 
 # ==============================================================================
