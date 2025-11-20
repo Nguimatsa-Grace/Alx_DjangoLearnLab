@@ -5,7 +5,7 @@
 </head>
 <body>
     <h1>Book List</h1>
-    <p>This page demonstrates the existence of book_list.html.</p>
+    <p>This page demonstrates the existence of book_list.html and integrates a secure form.</p>
 
     <h2>Search Books</h2>
     <form method="get" action="{% url 'book_search_secure' %}">
@@ -14,11 +14,13 @@
     </form>
     
     <h2>Form Example (SQL Injection Prevention)</h2>
-    <p>The form below is securely rendered using Django forms, inheriting validation and sanitation.</p>
+    <p>The form below is securely rendered using Django forms.</p>
 
     <form method="post" action="{% url 'submit_book_form' %}">
         {% csrf_token %}
-        {{ form.as_p }}
+        {% if form %}
+            {{ form.as_p }}
+        {% endif %}
         <button type="submit">Submit Form</button>
     </form>
 
