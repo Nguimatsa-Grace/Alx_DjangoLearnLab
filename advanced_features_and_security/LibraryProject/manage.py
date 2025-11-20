@@ -3,15 +3,10 @@
 import os
 import sys
 
-# --- CRITICAL FIX START ---
-# Force the current directory onto the path so Python can find nested modules like 'core_config'.
-sys.path.append(os.path.abspath(os.path.dirname(__file__)))
-# --- CRITICAL FIX END ---
-
-
 def main():
     """Run administrative tasks."""
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core_config.settings')
+    # FIX: Now explicitly pointing to the renamed 'config' folder for settings.
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:

@@ -1,14 +1,23 @@
 from django.shortcuts import render
-from django.contrib.auth.forms import UserCreationForm # ✅ New Import
-from django.urls import reverse_lazy                   # ✅ New Import
-from django.views.generic import CreateView            # ✅ New Import
+from django.contrib.auth.decorators import permission_required
+from django.http import HttpResponse
 
-# Create your views here.
+# The custom permissions we defined in models.py are used here
+# to restrict access to these functions.
 
-# 👇 ADD THIS CLASS DEFINITION
-class SignUpView(CreateView):
-    form_class = UserCreationForm
-    success_url = reverse_lazy("login")
-    template_name = "registration/signup.html"
+@permission_required('bookshelf.can_create', raise_exception=True)
+def create_book(request):
+    """
+    View that requires the custom 'can_create' permission.
+    Admins and Editors should have access.
+    """
+    return HttpResponse("You have permission to create books.")
 
-# Create your views here.
+
+@permission_required('bookshelf.can_delete', raise_exception=True)
+def delete_book(request):
+    """
+    View that requires the custom 'can_delete' permission.
+    Admins and Editors should have access.
+    """
+    return HttpResponse("You have permission to delete books.")

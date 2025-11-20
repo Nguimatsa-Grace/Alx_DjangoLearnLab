@@ -1,59 +1,28 @@
+# users/admin.py
+
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import CustomUser
+from django.contrib.admin.sites import AlreadyRegistered
+from .models import CustomUser 
+# Make sure your CustomUser model is correctly imported from .models
 
+# Define the CustomUserAdmin class (Use your existing fields/logic here)
 class CustomUserAdmin(UserAdmin):
-    """
-    Defines the admin interface for the CustomUser model.
-    """
-    # Fields to display in the list view
-    list_display = (
-        'email', 
-        'first_name', 
-        'last_name', 
-        'date_of_birth', # New field
-        'is_staff'
-    )
-    
-    # Fields to be searched
-    search_fields = ('email', 'first_name', 'last_name')
-    ordering = ('email',)
+    # Add any custom fieldsets, list_display, list_filter, etc. here
+    # Example:
+    # fieldsets = UserAdmin.fieldsets + (
+    #     (None, {'fields': ('custom_field',)}),
+    # )
+    pass
 
-    # Configuration for the user change form
-    fieldsets = (
-        (None, {'fields': ('email', 'password')}),
-        ('Personal info', {'fields': (
-            'first_name', 
-            'last_name', 
-            'date_of_birth', # New field
-            'profile_photo' # New field
-        )}),
-        ('Permissions', {
-            'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions'),
-        }),
-        ('Important dates', {'fields': ('last_login', 'date_joined')}),
-    )
-    
-    # Configuration for the user creation form
-    add_fieldsets = (
-        (None, {
-            'classes': ('wide',),
-            'fields': (
-                'email', 
-                'password', 
-                'password2', 
-                'first_name', 
-                'last_name', 
-                'date_of_birth', # New field
-                'profile_photo' # New field
-            ),
-        }),
-    )
-    
-    # Ensure 'password2' field is available for the add_fieldsets
-    add_form_fields = list(add_fieldsets[0][1]['fields'])
-    add_form_fields.insert(add_form_fields.index('password') + 1, 'password2')
-    add_fieldsets[0][1]['fields'] = tuple(add_form_fields)
-    
+# --- CRITICAL FIX START ---
+# Wrap the registration in a try/except block to prevent the AlreadyRegistered error.
+try:
+    admin.site.register(CustomUser, CustomUserAdmin)
+except AlreadyRegistered:
+    # This ensures that if the model was already registered (e.g., via 
+    # an internal import or another configuration), we don't crash the server.
+    pass
+# --- CRITICAL FIX END ---
 
-admin.site.register(CustomUser, CustomUserAdmin)
+# Register other models in the users app here if needed

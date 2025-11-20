@@ -1,27 +1,24 @@
+# config/settings.py
+
 from pathlib import Path
-import os 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# Quick-start development settings - unsuitable for production
-SECRET_KEY = 'django-insecure-m_k8i(v0t+3w%3a^@b0v3p8*s53y_e*a^3k6g3-d-2s8r5-h$'
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = 'django-insecure-m_e#5p*5x@h*^2*@+y_1*@*8@2e*c@t9r+9*c@i5r@f#@x%i&'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = True 
 
 ALLOWED_HOSTS = []
 
-# Application definition
-INSTALLED_APPS = [
 
-    
-    # --- TWO-FACTOR AUTHENTICATION APPS ---
-    'two_factor',
-    'django_otp',
-    'django_otp.plugins.otp_totp',
-    # ------------------------------------
+# Application definition
+
+INSTALLED_APPS = [
+    # Two-factor apps REMOVED
     
     'django.contrib.admin',
     'django.contrib.auth',
@@ -29,7 +26,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'bookshelf', # CRITICAL: This is the app containing the CustomUser model
+    
+    # Your Project Apps
+    'bookshelf',
+    'users',
+    'relationship_app',
 ]
 
 MIDDLEWARE = [
@@ -38,16 +39,17 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    # django_otp middleware REMOVED
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'core_config.urls' 
+ROOT_URLCONF = 'config.project_urls_fixed'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'], 
+        'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -60,7 +62,8 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'core_config.wsgi.application'
+WSGI_APPLICATION = 'config.wsgi.application'
+
 
 # Database
 DATABASES = {
@@ -69,6 +72,12 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+
+# Authentication Backends
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+]
 
 
 # Password validation
@@ -87,43 +96,29 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Custom User Model and Login URLs
+AUTH_USER_MODEL = 'users.CustomUser'
+
+LOGIN_URL = '/admin/login/' 
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+
 
 # Internationalization
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# Media files (for user uploads like profile pictures)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-
-# =======================================================
-# --- CUSTOM USER MODEL & MEDIA CONFIGURATION (CRITICAL) ---
-# =======================================================
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
-# =======================================================
-# --- TWO-FACTOR AUTHENTICATION (2FA) CONFIGURATION (CRITICAL) ---
-# =======================================================
-AUTHENTICATION_BACKENDS = [
-    'two_factor.backends.TwoFactorBackend',
-    'django.contrib.auth.backends.ModelBackend',
-]
-
-LOGIN_URL = 'two_factor:login'
-LOGIN_REDIRECT_URL = 'security_home' 
-TWO_FACTOR_CUSTOM_MODEL = 'bookshelf.CustomUser'
-SILENCED_SYSTEM_CHECKS = ["urls.E004"] 
-
-# Configure Django to use the CustomUser model for authentication
-# CRITICAL: This line defines the custom user model location
-AUTH_USER_MODEL = 'bookshelf.CustomUser'

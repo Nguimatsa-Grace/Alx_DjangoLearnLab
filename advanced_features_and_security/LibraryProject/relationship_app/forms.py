@@ -1,9 +1,8 @@
 # relationship_app/forms.py
-from django.contrib.auth.forms import UserCreationForm
+from django import forms
+from .models import Book, Author
 
-# We inherit from Django's built-in UserCreationForm for a standard registration form
-class CustomUserCreationForm(UserCreationForm):
-    class Meta(UserCreationForm.Meta):
-        # Use the default User model
-        fields = UserCreationForm.Meta.fields + ("email",) 
-        # Note: You can add more fields if needed, but 'email' is a common addition
+class BookForm(forms.ModelForm):
+    class Meta:
+        model = Book
+        fields = ['title', 'author', 'publication_year']
