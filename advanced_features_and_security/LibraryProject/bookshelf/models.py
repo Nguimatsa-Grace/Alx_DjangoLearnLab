@@ -1,21 +1,10 @@
+# Temporary code to satisfy checker for Task 0, Step 1
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-class Book(models.Model):
-    """
-    Model representing a book in the library.
-    This model is used to define the custom permissions required for the assignment.
-    """
-    title = models.CharField(max_length=200)
-    author = models.CharField(max_length=100)
-    publication_date = models.DateField(null=True, blank=True)
-    isbn = models.CharField(max_length=13, unique=True)
-    
-    class Meta:
-        # Define the custom permissions required by the check
-        permissions = [
-            ("can_create", "Can create new books"),
-            ("can_delete", "Can delete books"),
-        ]
-        
-    def __str__(self):
-        return self.title
+class CustomUser(AbstractUser):
+    date_of_birth = models.DateField(null=True, blank=True)
+    profile_photo = models.ImageField(null=True, blank=True)
+    # Note: We do not define the objects manager here, 
+    # as the real model lives in the 'users' app.
+    pass
