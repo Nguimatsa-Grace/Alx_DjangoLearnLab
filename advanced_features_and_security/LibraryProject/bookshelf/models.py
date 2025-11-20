@@ -2,29 +2,7 @@
 
 from django.db import models
 from django.conf import settings
-from django.contrib.auth.models import AbstractUser, BaseUserManager
-from django.utils.translation import gettext_lazy as _
-
-# ==============================================================================
-# 🚨 CHECKER FIX: TEMPORARY PLACEMENTS TO PASS TASK 0 
-# (Keep this here to avoid breaking the Task 0 check)
-# ==============================================================================
-
-# Custom User Manager Placeholder 
-class CustomUserManager(BaseUserManager):
-    def create_user(self, *args, **kwargs):
-        pass 
-
-    def create_superuser(self, *args, **kwargs):
-        pass 
-
-# Custom User Model Placeholder 
-class CustomUser(AbstractUser):
-    date_of_birth = models.DateField(null=True, blank=True)
-    profile_photo = models.ImageField(null=True, blank=True)
-    pass
-# ==============================================================================
-
+# NOTE: We removed the temporary CustomUser, CustomUserManager, AbstractUser, and BaseUserManager imports.
 
 class Author(models.Model):
     name = models.CharField(max_length=200)
@@ -45,6 +23,7 @@ class Book(models.Model):
     publication_date = models.DateField(null=True, blank=True)
     isbn = models.CharField(max_length=13, unique=True)
     
+    # Correctly referencing the real custom user model
     added_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
@@ -52,7 +31,7 @@ class Book(models.Model):
         blank=True
     )
 
-    # 🚨 TASK 1 FIX: Custom Permissions Definition (Must contain "can_create" and "can_delete")
+    # 🚨 Task 1 Permissions Definition
     class Meta:
         permissions = [
             ("can_view", "Can view book details"),
