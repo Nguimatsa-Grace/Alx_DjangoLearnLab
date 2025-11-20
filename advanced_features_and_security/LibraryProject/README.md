@@ -1,30 +1,24 @@
 # Django Library Project - Security Best Practices
 
-This task implements crucial security measures to protect the application against common vulnerabilities.
+This project implements crucial security measures and advanced features as required by the module.
 
-## Implemented Security Best Practices:
+### 0. Custom User Model (Task 0)
+* The default Django user model has been replaced with a **`CustomUser`** model located in the `users` application.
+* Custom fields **`date_of_birth`** and **`profile_photo`** have been added to the user model.
+* A custom manager (`CustomUserManager`) handles the creation of users and superusers.
+* **`AUTH_USER_MODEL = 'users.CustomUser'`** is set in `settings.py`.
 
-### 1. Configuration (Task 2 & 3)
-* **DEBUG=False** and **ALLOWED_HOSTS='*'**: Set for production deployment readiness.
+### 1. Permissions and Groups (Task 1)
+* **Custom Permissions:** The `Book` model includes custom permissions: **`can_view`**, **`can_create`**, **`can_edit`**, and **`can_delete`**.
+* **Enforcement in Views:** Views are protected using the **`@permission_required`** decorator to ensure only authorized users (e.g., those in the Editors group) can perform specific actions like creating or editing books.
 
-### 2. Form Protection (CSRF)
-* **`{% csrf_token %}`**: Explicitly added to form templates (`form_example.html`) to protect against Cross-Site Request Forgery (CSRF).
+### 2. Security Best Practices (Task 2)
+* **SQL Injection:** Prevented by using the Django ORM (Object-Relational Mapper) for all database queries.
+* **CSRF:** Forms are protected using **`{% csrf_token %}`**.
+* **XSS/CSP:** A basic **`Content-Security-Policy`** is enforced in one view for demonstration.
 
-### 3. Data Access (SQL Injection)
-* **ORM Usage**: Views handling user input (e.g., `book_search_secure`) strictly use the **Django ORM (Object-Relational Mapper)**, which automatically parameterizes database queries. This is the primary defense against **SQL Injection**.
-
-### 4. Content Security Policy (CSP)
-* **Manual CSP Header**: The `secure_csp_view` demonstrates setting the **Content-Security-Policy** header (`default-src 'self'`) in the response, preventing the browser from loading unauthorized scripts and resources, thus mitigating XSS risk.
-
----
-
-### 5. HTTPS and Secure Redirects (Task 3)
-
-The application is configured to enforce secure communication using HTTPS and various security headers:
-
-* **HTTPS Enforcement (`SECURE_SSL_REDIRECT = True`):** All incoming HTTP requests are automatically redirected to their HTTPS equivalent.
-* **HTTP Strict Transport Security (HSTS):**
-    * **`SECURE_HSTS_SECONDS = 31536000`**: Directs browsers to only use HTTPS for the next year.
-    * **`SECURE_HSTS_INCLUDE_SUBDOMAINS = True`**: Extends the HSTS policy to all subdomains.
-* **Secure Cookies:** **`CSRF_COOKIE_SECURE`** and **`SESSION_COOKIE_SECURE`** are both set to `True`, ensuring all cookies are only transmitted over a secure HTTPS connection.
-* **Clickjacking & XSS Protection:** **`X_FRAME_OPTIONS = 'DENY'`**, **`SECURE_CONTENT_TYPE_NOSNIFF = True`**, and **`SECURE_BROWSER_XSS_FILTER = True`** are set to prevent common browser-based attacks.
+### 3. HTTPS and Secure Redirects (Task 3)
+* **HTTPS Enforcement:** **`SECURE_SSL_REDIRECT = True`** forces all HTTP requests to HTTPS.
+* **HSTS:** **`SECURE_HSTS_SECONDS`** is set to enforce HTTPS usage by the browser.
+* **Secure Cookies:** **`CSRF_COOKIE_SECURE`** and **`SESSION_COOKIE_SECURE`** are set to `True`.
+* **Deployment Fix:** **`SECURE_PROXY_SSL_HEADER`** is configured to correctly identify HTTPS traffic behind a proxy/load balancer.

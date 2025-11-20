@@ -3,10 +3,11 @@
 import os
 import sys
 
+
 def main():
     """Run administrative tasks."""
-    # FIX: Now explicitly pointing to the renamed 'config' folder for settings.
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
+    # 🚨 CRITICAL FIX: Changed 'config.settings' to your project name 'LibraryProject.settings'
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'LibraryProject.settings')
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
