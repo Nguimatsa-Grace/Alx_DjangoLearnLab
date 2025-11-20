@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Secure Form Example</title>
+</head>
+<body>
+    <h2>Secure Book Submission Form</h2>
+    
+    <form method="post" action="{% url 'submit_book_form' %}">
+        
+        {% csrf_token %}
+        
+        <label for="title">Book Title:</label>
+        <input type="text" id="title" name="title" required><br><br>
+        
+        <label for="author">Author:</label>
+        <input type="text" id="author" name="author" required><br><br>
+        
+        <input type="submit" value="Submit Securely">
+    </form>
+</body>
+</html>

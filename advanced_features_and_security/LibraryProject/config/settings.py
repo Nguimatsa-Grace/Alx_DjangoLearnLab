@@ -10,16 +10,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-m_e#5p*5x@h*^2*@+y_1*@*8@2e*c@t9r+9*c@i5r@f#@x%i&'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True 
+DEBUG = False # 🚨 STEP 1: Set DEBUG to False (Production setting)
 
-ALLOWED_HOSTS = []
+# For testing in a production mode locally, we allow all hosts.
+# In a real deployment, this must be set to actual domain names (e.g., ['example.com', 'www.example.com']).
+ALLOWED_HOSTS = ['*'] # 🚨 STEP 1: Add ALLOWED_HOSTS for DEBUG=False
 
 
 # Application definition
 
 INSTALLED_APPS = [
-    # Two-factor apps REMOVED
-    
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -39,7 +39,6 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    # django_otp middleware REMOVED
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -98,7 +97,6 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Custom User Model and Login URLs
 AUTH_USER_MODEL = 'users.CustomUser'
-
 LOGIN_URL = '/admin/login/' 
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
@@ -122,3 +120,41 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# ==============================================================================
+# 🚨 STEP 1: Security Configuration (Required Settings)
+# ==============================================================================
+
+# Protects against XSS by enabling the browser's built-in XSS filter.
+SECURE_BROWSER_XSS_FILTER = True 
+
+# Prevents the browser from MIME-sniffing content type, reducing XSS risk.
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# Protects against Clickjacking attacks by setting the X-Frame-Options header.
+X_FRAME_OPTIONS = 'DENY' 
+
+# Ensures the CSRF cookie is only sent over HTTPS (requires HTTPS in production).
+CSRF_COOKIE_SECURE = True 
+
+# Ensures the Session cookie is only sent over HTTPS (requires HTTPS in production).
+SESSION_COOKIE_SECURE = True 
+
+# Recommended for production: forces HTTP connections to upgrade to HTTPS.
+# SECURE_SSL_REDIRECT = True 
+
+# Recommended for production: sets the HTTP Strict Transport Security header.
+# SECURE_HSTS_SECONDS = 3600
+# SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+# SECURE_HSTS_PRELOAD = True
+
+# ==============================================================================
+# 🚨 STEP 4: Content Security Policy (CSP) Setup
+# We will use simple manual headers for this task instead of django-csp dependency.
+# This prevents browsers from loading scripts/styles from untrusted sources.
+# ==============================================================================
+
+# NOTE: Since the task is mandatory and we need to minimize dependencies, 
+# we will handle CSP in middleware or templates/views rather than installing django-csp.
+# The `django-csp` package would be the preferred method in a real project.
