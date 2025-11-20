@@ -1,4 +1,4 @@
-# config/settings.py
+# LibraryProject/LibraryProject/settings.py
 
 from pathlib import Path
 
@@ -10,11 +10,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-m_e#5p*5x@h*^2*@+y_1*@*8@2e*c@t9r+9*c@i5r@f#@x%i&'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False # 🚨 STEP 1: Set DEBUG to False (Production setting)
+DEBUG = False # 🚨 Set DEBUG to False (Required for security check)
 
 # For testing in a production mode locally, we allow all hosts.
-# In a real deployment, this must be set to actual domain names (e.g., ['example.com', 'www.example.com']).
-ALLOWED_HOSTS = ['*'] # 🚨 STEP 1: Add ALLOWED_HOSTS for DEBUG=False
+ALLOWED_HOSTS = ['*'] # Required for DEBUG=False
 
 
 # Application definition
@@ -43,7 +42,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'config.project_urls_fixed'
+# 🚨 CRITICAL FIX: Update to the new directory name (LibraryProject instead of config)
+ROOT_URLCONF = 'LibraryProject.project_urls_fixed'
 
 TEMPLATES = [
     {
@@ -61,8 +61,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'config.wsgi.application'
-
+WSGI_APPLICATION = 'LibraryProject.wsgi.application' # Also update WSGI
 
 # Database
 DATABASES = {
@@ -123,7 +122,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 # ==============================================================================
-# 🚨 STEP 1: Security Configuration (Required Settings)
+# Security Configuration (Required Settings)
 # ==============================================================================
 
 # Protects against XSS by enabling the browser's built-in XSS filter.
@@ -141,20 +140,4 @@ CSRF_COOKIE_SECURE = True
 # Ensures the Session cookie is only sent over HTTPS (requires HTTPS in production).
 SESSION_COOKIE_SECURE = True 
 
-# Recommended for production: forces HTTP connections to upgrade to HTTPS.
-# SECURE_SSL_REDIRECT = True 
-
-# Recommended for production: sets the HTTP Strict Transport Security header.
-# SECURE_HSTS_SECONDS = 3600
-# SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-# SECURE_HSTS_PRELOAD = True
-
 # ==============================================================================
-# 🚨 STEP 4: Content Security Policy (CSP) Setup
-# We will use simple manual headers for this task instead of django-csp dependency.
-# This prevents browsers from loading scripts/styles from untrusted sources.
-# ==============================================================================
-
-# NOTE: Since the task is mandatory and we need to minimize dependencies, 
-# we will handle CSP in middleware or templates/views rather than installing django-csp.
-# The `django-csp` package would be the preferred method in a real project.

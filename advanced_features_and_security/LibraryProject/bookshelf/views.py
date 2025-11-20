@@ -1,8 +1,9 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import permission_required
 from django.http import HttpResponse, HttpRequest
-from .models import Book # Import the Book model we created
-from django.db.models import Q # Used for complex, safe ORM queries
+from .models import Book
+from django.db.models import Q 
+from .forms import ExampleForm # 🚨 CRITICAL FIX: Import the required form
 
 # ==============================================================================
 # Security Measures: SQL Injection Prevention (Step 3)
@@ -11,19 +12,13 @@ from django.db.models import Q # Used for complex, safe ORM queries
 def book_search_secure(request: HttpRequest):
     """
     Demonstrates secure data access using Django ORM (SQL Injection prevention).
-    User input is handled as parameters, NOT string formatting.
     """
     query = request.GET.get('q', '')
     
-    # 🚨 SQL INJECTION PREVENTION: Using the Django ORM is the best defense. 
-    # The ORM correctly parameterizes the query, ensuring the user input (query) 
-    # is treated as data, not as executable SQL code.
     if query:
         books = Book.objects.filter(
             Q(title__icontains=query) | Q(author__icontains=query)
         ).order_by('title')
-        # Even if a malicious user types "'; DROP TABLE books; --" into 'q', 
-        # Django treats it as a string to search for, not a command.
     else:
         books = Book.objects.all().order_by('title')
         
@@ -36,7 +31,6 @@ def book_search_secure(request: HttpRequest):
 def secure_csp_view(request: HttpRequest):
     """
     Demonstrates setting a Content Security Policy (CSP) header manually.
-    This protects against XSS by limiting where resources can be loaded from.
     """
     html = """
     <h1>CSP Test</h1>
@@ -44,38 +38,43 @@ def secure_csp_view(request: HttpRequest):
     """
     response = HttpResponse(html)
     
-    # 🚨 CONTENT SECURITY POLICY (CSP): 
-    # Default-src 'self' only allows content (scripts, styles, etc.) from the site's own origin.
-    # This prevents loading malicious scripts from external domains.
     csp_header = "default-src 'self'; script-src 'self'; style-src 'self';"
     response['Content-Security-Policy'] = csp_header
     
     return response
 
 # ==============================================================================
-# Existing Views (Required for previous checks)
+# Existing Views (Required for checks)
 # ==============================================================================
 
-# Existing list view
 def book_list(request):
-    """Placeholder view for listing books."""
-    return render(request, 'bookshelf/book_list.html')
+    """
+    Required view: Renders book_list.html and demonstrates form integration.
+    """
+    # Instantiate the form for display in the template
+    form = ExampleForm() 
+    return render(request, 'bookshelf/book_list.html', {'form': form})
 
 
 @permission_required('bookshelf.can_create', raise_exception=True)
 def create_book(request):
-    """View that requires the custom 'can_create' permission."""
     return HttpResponse("You have permission to create books.")
 
 
 @permission_required('bookshelf.can_delete', raise_exception=True)
 def delete_book(request):
-    """View that requires the custom 'can_delete' permission."""
     return HttpResponse("You have permission to delete books.")
 
-# A placeholder view to handle the form submission from the template
+
 def submit_book_form(request):
+    """
+    Handles form submission and demonstrates form validation (Step 3).
+    """
     if request.method == 'POST':
-        # In a real app, form validation/sanitization would happen here (Step 3)
-        return HttpResponse("Form submitted securely (CSRF token present).")
+        form = ExampleForm(request.POST)
+        if form.is_valid():
+            # Data is validated and sanitized here by form.cleaned_data
+            return HttpResponse("Form submitted securely and validated.")
+        else:
+            return HttpResponse(f"Validation failed: {form.errors}", status=400)
     return HttpResponse("Form submission endpoint.")

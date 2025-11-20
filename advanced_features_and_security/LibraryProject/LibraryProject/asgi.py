@@ -11,7 +11,7 @@ import os
 
 from django.core.asgi import get_asgi_application
 
-# CRITICAL FIX: Point the environment variable to the correct settings file path
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
+# 🚨 CRITICAL FIX: Update to the new directory name (LibraryProject instead of config)
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'LibraryProject.settings')
 
 application = get_asgi_application()
