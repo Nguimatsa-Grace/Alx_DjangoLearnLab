@@ -10,10 +10,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-m_e#5p*5x@h*^2*@+y_1*@*8@2e*c@t9r+9*c@i5r@f#@x%i&'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False # 🚨 Set DEBUG to False (Required for security check)
+DEBUG = False # Must be False for production and security settings to be fully effective
 
-# For testing in a production mode locally, we allow all hosts.
-ALLOWED_HOSTS = ['*'] # Required for DEBUG=False
+# Required for DEBUG=False
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -33,7 +33,8 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
+    # SecurityMiddleware should be at the top
+    'django.middleware.security.SecurityMiddleware', 
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -42,7 +43,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-# 🚨 CRITICAL FIX: Update to the new directory name (LibraryProject instead of config)
+# Update to the new directory name (LibraryProject instead of config)
 ROOT_URLCONF = 'LibraryProject.project_urls_fixed'
 
 TEMPLATES = [
@@ -61,7 +62,8 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'LibraryProject.wsgi.application' # Also update WSGI
+WSGI_APPLICATION = 'LibraryProject.wsgi.application'
+
 
 # Database
 DATABASES = {
@@ -122,22 +124,39 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 # ==============================================================================
-# Security Configuration (Required Settings)
+# 🚨 TASK 3: HTTPS and Secure Redirect Configuration
 # ==============================================================================
 
-# Protects against XSS by enabling the browser's built-in XSS filter.
-SECURE_BROWSER_XSS_FILTER = True 
+# Step 1: Configure Django for HTTPS Support
+# SECURE_SSL_REDIRECT = True ensures all non-HTTPS requests are redirected to HTTPS.
+# NOTE: This setting requires your web server (Nginx/Apache) to be configured for SSL.
+SECURE_SSL_REDIRECT = True 
 
-# Prevents the browser from MIME-sniffing content type, reducing XSS risk.
-SECURE_CONTENT_TYPE_NOSNIFF = True
+# SECURE_HSTS_SECONDS enables HTTP Strict Transport Security (HSTS). 
+# This tells browsers (for 1 year, 31536000 seconds) to only access the site via HTTPS.
+SECURE_HSTS_SECONDS = 31536000
 
-# Protects against Clickjacking attacks by setting the X-Frame-Options header.
-X_FRAME_OPTIONS = 'DENY' 
+# SECURE_HSTS_INCLUDE_SUBDOMAINS applies the HSTS policy to all subdomains.
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 
-# Ensures the CSRF cookie is only sent over HTTPS (requires HTTPS in production).
+# SECURE_HSTS_PRELOAD allows the site to be submitted to browser HSTS preload lists.
+SECURE_HSTS_PRELOAD = True
+
+# Step 2: Enforce Secure Cookies (Already set in Task 2, confirmed here)
+# CSRF_COOKIE_SECURE ensures the CSRF token is only sent over HTTPS.
 CSRF_COOKIE_SECURE = True 
 
-# Ensures the Session cookie is only sent over HTTPS (requires HTTPS in production).
+# SESSION_COOKIE_SECURE ensures the session cookie is only sent over HTTPS.
 SESSION_COOKIE_SECURE = True 
+
+# Step 3: Implement Secure Headers (Already set in Task 2, confirmed here)
+# SECURE_BROWSER_XSS_FILTER enables the browser's built-in XSS filter.
+SECURE_BROWSER_XSS_FILTER = True 
+
+# SECURE_CONTENT_TYPE_NOSNIFF prevents browsers from MIME-sniffing (protects against XSS).
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# X_FRAME_OPTIONS prevents the site from being embedded in an iframe (Clickjacking protection).
+X_FRAME_OPTIONS = 'DENY' 
 
 # ==============================================================================
