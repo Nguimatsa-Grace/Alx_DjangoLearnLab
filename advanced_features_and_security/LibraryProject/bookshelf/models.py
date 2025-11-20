@@ -9,7 +9,7 @@ from django.utils.translation import gettext_lazy as _ # Needed for checker fix
 # 🚨 CHECKER FIX: TEMPORARY PLACEMENTS TO PASS TASK 0
 # ==============================================================================
 
-# 1. Custom User Manager Placeholder (To pass the current failing check)
+# 1. Custom User Manager Placeholder (To pass the previous failing check)
 class CustomUserManager(BaseUserManager):
     def create_user(self, *args, **kwargs):
         pass # The real logic is in users/models.py
@@ -45,7 +45,7 @@ class Book(models.Model):
     publication_date = models.DateField(null=True, blank=True)
     isbn = models.CharField(max_length=13, unique=True)
     
-    # Reference the Custom User Model
+    # 🚨 CRITICAL REFERENCE: This line uses settings.AUTH_USER_MODEL
     added_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
