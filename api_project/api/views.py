@@ -1,5 +1,6 @@
 from django.http import HttpResponse
 from rest_framework import viewsets, generics 
+from rest_framework.permissions import IsAuthenticated, IsAdminUser 
 from .models import Book
 from .serializers import BookSerializer
 
@@ -11,12 +12,25 @@ def api_root(request):
 class BookList(generics.ListAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
+    
+# Task 3: New View for books with 'Dune' in the title
+class DuneBookList(generics.ListAPIView):
+    """
+    Exposes only books with the title 'Dune' using the custom manager method.
+    """
+    queryset = Book.objects.get_dune_books() # Use the custom manager method
+    serializer_class = BookSerializer
+    permission_classes = [IsAuthenticated] # Require authentication to access this special list
 
-# Task 2: ViewSet for all CRUD operations
+# Task 2/3: ViewSet for all CRUD operations, now with permissions
 class BookViewSet(viewsets.ModelViewSet):
     """
     Provides full CRUD operations (List, Retrieve, Create, Update, Destroy) 
     for the Book model using ModelViewSet.
+    
+    Permissions: Requires authentication for all operations.
     """
     queryset = Book.objects.all()
     serializer_class = BookSerializer
+    # 🚨 Task 3 Addition: Require users to be authenticated to perform any action
+    permission_classes = [IsAuthenticated]

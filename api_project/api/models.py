@@ -1,14 +1,21 @@
 from django.db import models
 
-# STEP 4: Define a Simple Book Model
+# Task 3: Define the Custom Model Manager
+class BookManager(models.Manager):
+    """
+    Custom manager for the Book model.
+    """
+    def get_dune_books(self):
+        """Returns books where the title is exactly 'Dune'."""
+        # Use self.filter() to return a QuerySet from the manager
+        return self.filter(title='Dune')
+
 class Book(models.Model):
-    """
-    A simple model representing a book with a title and an author.
-    """
-    # Define the fields for the Book model
-    title = models.CharField(max_length=250, help_text="Title of the book")
-    author = models.CharField(max_length=250, help_text="Author of the book")
+    title = models.CharField(max_length=255)
+    author = models.CharField(max_length=255)
     
+    # Attach the custom manager to the model, replacing the default Manager
+    objects = BookManager()
+
     def __str__(self):
-        # A human-readable representation of the object
         return self.title
