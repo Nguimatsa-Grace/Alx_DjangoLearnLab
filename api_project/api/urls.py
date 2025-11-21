@@ -1,6 +1,7 @@
 from django.urls import path
+from .views import BookList
 
-# This is a placeholder file for Task 0. We will define API endpoints here in future tasks.
 urlpatterns = [
-    # path('', views.BookList.as_view(), name='book_list'), # Placeholder for future views
+    # Task 1 Endpoint: Maps /api/books/ to the BookList view
+    path('books/', BookList.as_view(), name='book-list'), 
 ]
