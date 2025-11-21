@@ -1,0 +1,26 @@
+<h1>Log In to the Library Project</h1>
+
+<form method="post">
+    {% csrf_token %}
+    
+    {# Display the Email field (which is the Django 'username' field in your custom setup) #}
+    <p>Email:<br>{{ form.username }}</p>
+    
+    {# Display the standard Password field #}
+    <p>Password:<br>{{ form.password }}</p>
+    
+    <button type="submit">Log In</button>
+</form>
+
+<p>Don't have an account? <a href="{% url 'signup' %}">Sign up here</a>.</p>
+
+{% if form.errors %}
+    <p style="color: red;">Your email and password didn't match. Please try again.</p>
+{% endif %}
+
+{# This loop helps display specific errors for individual fields (like "This field is required") #}
+{% for field in form %}
+    {% for error in field.errors %}
+        <p style="color: red;">{{ error }}</p>
+    {% endfor %}
+{% endfor %}

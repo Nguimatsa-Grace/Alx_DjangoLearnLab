@@ -1,0 +1,122 @@
+{% load bookshelf_filters %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Library Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7f6;
+            color: #333;
+        }
+        header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px 40px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        header h1 {
+            margin: 0;
+            font-size: 2em;
+        }
+        header p {
+            margin: 5px 0 0;
+            font-size: 0.9em;
+        }
+        main {
+            padding: 40px;
+            max-width: 900px;
+            margin: 20px auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+        }
+        .placeholder-box {
+            border: 2px solid #3498db;
+            padding: 30px;
+            background-color: #ecf0f1;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .librarian-box {
+            border-color: #27ae60; /* Green for Librarian */
+            background-color: #e8f8f5;
+        }
+        .patron-box {
+            border-color: #f39c12; /* Orange for Patron */
+            background-color: #fef9e7;
+        }
+        .placeholder-box h2 {
+            color: #2980b9;
+            margin-top: 0;
+        }
+        footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: 30px;
+            font-size: 0.8em;
+            color: #7f8c8d;
+        }
+        footer a {
+            color: #3498db;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+        footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Library Dashboard</h1>
+        <p>Logged in as: <strong>{{ user.username }}</strong> ({{ user.email }})</p>
+    </header>
+    
+    <main>
+        
+        {% comment %} 
+        We use the custom filter 'is_librarian' which is a reliable way to check group membership.
+        {% endcomment %}
+        
+        {% if user|is_librarian %}
+            <div class="placeholder-box librarian-box">
+                <h2>Librarian Dashboard</h2>
+                <p style="color: #27ae60; font-weight: bold;">
+                    Welcome, Librarian! You have full administrative access.
+                </p>
+                <p>Features coming soon: Add Book, Edit Book, View Checkout History.</p>
+                <a href="{% url 'admin:index' %}" style="display: inline-block; margin-top: 15px; padding: 10px 20px; background-color: #27ae60; color: white; border-radius: 5px; text-decoration: none;">Go to Admin Panel</a>
+            </div>
+        {% else %}
+            <div class="placeholder-box patron-box">
+                <h2>Patron Dashboard</h2>
+                <p style="color: #f39c12; font-weight: bold;">
+                    Welcome, Patron! You can view books and check them out.
+                </p>
+                <p>Features coming soon: Search Books, My Checkouts, Reserved Books.</p>
+            </div>
+        {% endif %}
+
+    </main>
+    
+    <footer>
+        <p>
+            <a href="{% url 'logout' %}">Log Out</a>
+            {% if user.is_superuser %}
+            | <a href="{% url 'admin:index' %}">Go to Admin Site</a>
+            {% endif %}
+        </p>
+        <p style="margin-top: 10px;">
+            User Role: 
+            <strong>
+                {% if user|is_librarian %}Librarian{% else %}Patron{% endif %}
+            </strong>
+        </p>
+    </footer>
+</body>
+</html>
