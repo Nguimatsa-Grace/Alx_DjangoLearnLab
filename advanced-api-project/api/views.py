@@ -1,8 +1,12 @@
 from rest_framework import generics, viewsets
-# FIX: Adding IsAuthenticated to the import list to satisfy the strict checker requirement
+# Import necessary filter/search/ordering backends
+from rest_framework.filters import SearchFilter, OrderingFilter
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated 
 from .models import Author, Book
 from .serializers import AuthorSerializer, BookSerializer
+from .filters import BookFilter # Import the custom filterset
+
 
 # --- 1. Author ViewSet (Remains unchanged) ---
 
@@ -18,18 +22,30 @@ class AuthorViewSet(viewsets.ModelViewSet):
 
 class BookList(generics.ListAPIView):
     """
-    ListView: Retrieves a list of all books.
+    ListView: Retrieves a list of all books, now with filtering, searching, and ordering.
     Permissions: Allows GET (read) to any user.
     """
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-    # Requires authentication for POST, allows GET for all
     permission_classes = [IsAuthenticatedOrReadOnly] 
+
+    # TASK 2 ADDITIONS: Filtering, Searching, and Ordering
+    # Step 1: Filtering by specific fields using the custom filter class
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_class = BookFilter
+
+    # Step 2: Search functionality on title and author (uses __str__ of author)
+    search_fields = ['title', 'author__name'] # Search on book title and the author's name field
+    
+    # Step 3: Ordering by fields
+    ordering_fields = ['title', 'publication_year', 'author']
+    # Optional: set a default ordering
+    ordering = ['title'] 
+
 
 class BookDetail(generics.RetrieveAPIView):
     """
     DetailView: Retrieves a single book instance.
-    Permissions: Allows GET (read) to any user.
     """
     queryset = Book.objects.all()
     serializer_class = BookSerializer
@@ -38,29 +54,23 @@ class BookDetail(generics.RetrieveAPIView):
 class BookCreate(generics.CreateAPIView):
     """
     CreateView: Creates a new book instance (POST).
-    Permissions: Restricts creation to authenticated users only.
     """
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-    # Requires authentication for POST
     permission_classes = [IsAuthenticatedOrReadOnly] 
 
 class BookUpdate(generics.UpdateAPIView):
     """
     UpdateView: Modifies an existing book instance (PUT/PATCH).
-    Permissions: Restricts updates to authenticated users only.
     """
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-    # Requires authentication for PUT/PATCH
     permission_classes = [IsAuthenticatedOrReadOnly]
 
 class BookDelete(generics.DestroyAPIView):
     """
     DeleteView: Deletes a book instance (DELETE).
-    Permissions: Restricts deletion to authenticated users only.
     """
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-    # Requires authentication for DELETE
     permission_classes = [IsAuthenticatedOrReadOnly]
