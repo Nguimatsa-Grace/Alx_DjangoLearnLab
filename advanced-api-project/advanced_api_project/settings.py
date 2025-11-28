@@ -71,6 +71,11 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
+    },
+    # CRITICAL FIX: Explicitly define a separate database configuration for testing
+    'test': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'test_db.sqlite3',
     }
 }
 
