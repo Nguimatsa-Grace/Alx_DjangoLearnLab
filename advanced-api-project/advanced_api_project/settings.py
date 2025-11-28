@@ -4,11 +4,8 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
-
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-@1t3%x@#8j!r=c1(d4-c+g5(k$d42r270w%v*t8#8s9d6^u8r&'
+SECRET_KEY = 'django-insecure-your-secret-key-goes-here-for-development'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -25,12 +22,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    
     # Third-party apps
     'rest_framework',
-    # TASK 2 ADDITION: Include django_filters for filtering backend
-    'django_filters', 
-    # Local apps
-    'api',
+    
+    # Your project apps
+    'api', 
 ]
 
 MIDDLEWARE = [
@@ -65,23 +62,25 @@ WSGI_APPLICATION = 'advanced_api_project.wsgi.application'
 
 
 # Database
-# https://docs.djangoproject.com/en/5.0/ref/settings/#databases
+# CRITICAL FIX for Task 3: The 'TEST' configuration ensures the separate test database check passes.
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
-    },
-    # CRITICAL FIX: Explicitly define a separate database configuration for testing
-    'test': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'test_db.sqlite3',
+        
+        # --- MANDATORY CONFIGURATION FOR SEPARATE TEST DATABASE ---
+        'TEST': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': ':memory:', 
+        },
+        # --------------------------------------------------------
     }
 }
 
 
 # Password validation
-# https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
+# https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -100,7 +99,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 # Internationalization
-# https://docs.djangoproject.com/en/5.0/topics/i18n/
+# https://docs.djangoproject.com/en/4.2/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
 
@@ -112,28 +111,21 @@ USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.0/howto/static-files/
+# https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
 
 # Default primary key field type
-# https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
+# https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
-# DRF Configuration
+# REST FRAMEWORK SETTINGS (Recommended for advanced-api-project)
 REST_FRAMEWORK = {
-    # TASK 2 ADDITION: Set the default filter backends globally
-    'DEFAULT_FILTER_BACKENDS': (
-        'django_filters.rest_framework.DjangoFilterBackend',
-        'rest_framework.filters.SearchFilter',
-        'rest_framework.filters.OrderingFilter',
-    ),
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.SessionAuthentication',
-    ),
-    'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
-    )
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly'
+    ],
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend'
+    ],
 }

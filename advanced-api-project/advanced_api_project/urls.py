@@ -1,18 +1,10 @@
 from django.contrib import admin
 from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from api import views
-
-# NOTE: The router definition has been moved to api/urls.py to consolidate includes.
+from rest_framework import routers # Keep router import for backward compatibility if needed, but the project now uses Generic Views
 
 urlpatterns = [
-    # 1. Django Admin site
     path('admin/', admin.site.urls),
-    
-    # 2. Consolidate ALL API endpoints under one include.
-    # This is the line the checker MUST find
-    path('api/', include('api.urls')),
-    
-    # Required for testing permissions in the browsable API
+    # Task 1 Requirement: Ensure the API URLs are included here
+    path('api/v1/', include('api.urls')),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]
