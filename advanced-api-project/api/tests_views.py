@@ -66,12 +66,14 @@ class BookAPITestCase(APITestCase):
             isbn="978-0007135017"
         )
 
-        # URLs for CRUD operations (REVERTED TO -pk NAMES)
+        # URLs for CRUD operations
         self.list_url = reverse('book-list')
         self.create_url = reverse('book-create')
+        
+        # FIX: The detail view URL is used for GET, PUT, and DELETE actions
         self.detail_url = reverse('book-detail', args=[self.book1.id])
-        self.update_url = reverse('book-update-pk', args=[self.book1.id])
-        self.delete_url = reverse('book-delete-pk', args=[self.book1.id])
+        self.update_url = self.detail_url
+        self.delete_url = self.detail_url
 
 
     # --- 1. CRUD Tests for Book Model ---
@@ -97,21 +99,23 @@ class BookAPITestCase(APITestCase):
             'publication_year': 2000, 
             'isbn': self.book1.isbn
         }
+        # Uses self.update_url, which is now self.detail_url (PUT method)
         response = self.client.put(self.update_url, updated_data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK) # Expecting 200 OK
+        self.assertEqual(response.status_code, status.HTTP_200_OK) 
         self.book1.refresh_from_db()
 
     def test_delete_book_authenticated(self):
         """Ensure a staff user can delete a book (DELETE)."""
         self.client.force_authenticate(user=self.staff_user)
+        # Uses self.delete_url, which is now self.detail_url (DELETE method)
         response = self.client.delete(self.delete_url)
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT) # Expecting 204 No Content
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
 
     # --- 2. Permission Tests (IsAuthenticatedOrReadOnly) ---
 
     def test_create_book_unauthenticated_fails(self):
-        """Ensure unauthenticated users are blocked from creation."""
+        """Ensure unauthenticated users are blocked from creation (POST)."""
         data = {
             'title': 'Test Book', 
             'author': self.author_a.id, 
@@ -121,7 +125,7 @@ class BookAPITestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN) 
         
     def test_update_book_regular_user_fails(self):
-        """Ensure non-staff users (regular_user) are blocked from updates."""
+        """Ensure non-staff users are blocked from updates (PUT)."""
         self.client.force_authenticate(user=self.regular_user)
         updated_data = {
             'title': 'Foundation Updated',
@@ -133,7 +137,7 @@ class BookAPITestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         
     def test_delete_book_unauthenticated_fails(self):
-        """Ensure unauthenticated users are blocked from deletion."""
+        """Ensure unauthenticated users are blocked from deletion (DELETE)."""
         response = self.client.delete(self.delete_url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
@@ -157,17 +161,3 @@ class BookAPITestCase(APITestCase):
         response = self.client.get(self.list_url, {'ordering': '-title'})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data[0]['title'], "The Left Hand of Darkness")
-
-***
-
-### Next Steps (Critical)
-
-1.  **Copy the Code:** Manually copy the entire Python block above and replace the contents of `advanced-api-project/api/tests_views.py`.
-2.  **Commit and Push:**
-
-    ```bash
-    git add api/tests_views.py
-    git commit -m "fix: Task 3 final URL fix, reverting book update/delete URLs to -pk suffix as per original project structure to fix status code errors."
-    git push
-    
-This must be the comprehensive and correct code to pass Task 3!
