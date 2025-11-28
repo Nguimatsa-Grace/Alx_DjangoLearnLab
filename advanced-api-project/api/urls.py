@@ -1,30 +1,26 @@
+import os
+from django.contrib import admin
 from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from . import views
+from rest_framework import routers
 
-# Moved router definition here from project urls.py
-router = DefaultRouter()
-router.register(r'authors', views.AuthorViewSet)
+from api import views
 
+# Create a default router for ViewSets
+router = routers.DefaultRouter()
+router.register(r'authors', views.AuthorViewSet, basename='author')
 
 urlpatterns = [
-    # Include Author routes from the router first (under /api/)
-    path('', include(router.urls)),
-    
-    # Book List (GET)
-    path('books/', views.BookList.as_view(), name='book-list'),
+    path('admin/', admin.site.urls),
+    # Include the router URLs for AuthorViewSet (generates author-list, author-detail)
+    path('api/', include(router.urls)),
 
-    # Explicit CRUD operations for functional correctness:
-    path('books/create/', views.BookCreate.as_view(), name='book-create'),
+    # Explicit URLs for Book views to match the test naming convention exactly
+    # 1. BookListAPIView (GET for list, uses book-list name for filtering/ordering tests)
+    path('api/books/', views.BookListAPIView.as_view(), name='book-list'), 
     
-    # Standard Detail URL for retrieval
-    path('books/<int:pk>/', views.BookDetail.as_view(), name='book-detail'),
+    # 2. BookCreateAPIView (POST for creation, uses book-create name for creation test)
+    path('api/books/create/', views.BookCreateAPIView.as_view(), name='book-create'), 
     
-    # Standard paths for UPDATE/DELETE with Primary Key
-    path('books/<int:pk>/update/', views.BookUpdate.as_view(), name='book-update-pk'),
-    path('books/<int:pk>/delete/', views.BookDelete.as_view(), name='book-delete-pk'),
-
-    # Checker Compliance Paths (Literal string matches)
-    path('books/update/', views.BookUpdate.as_view(), name='book-update-literal'),
-    path('books/delete/', views.BookDelete.as_view(), name='book-delete-literal'),
+    # 3. BookDetailAPIView (GET, PUT, DELETE, uses book-detail name for all detail operations)
+    path('api/books/<int:pk>/', views.BookDetailAPIView.as_view(), name='book-detail'),
 ]
