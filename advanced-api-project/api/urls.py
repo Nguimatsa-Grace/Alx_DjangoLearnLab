@@ -1,17 +1,18 @@
 from django.urls import path, include
-from rest_framework import routers
-from . import views
+from rest_framework.routers import DefaultRouter
+from .views import AuthorViewSet, BookListCreateAPIView, BookDetailAPIView 
 
-# Router for ViewSets (Author)
-router = routers.DefaultRouter()
-router.register(r'authors', views.AuthorViewSet, basename='author')
+# Setup router for ViewSets
+router = DefaultRouter()
+router.register(r'authors', AuthorViewSet)
 
 urlpatterns = [
-    # Router URLs for AuthorViewSet (generates author-list, author-detail)
-    path('', include(router.urls)),
-
-    # Explicit URLs for Book views to match the test naming convention exactly
-    path('books/', views.BookListAPIView.as_view(), name='book-list'), 
-    path('books/create/', views.BookCreateAPIView.as_view(), name='book-create'), 
-    path('books/<int:pk>/', views.BookDetailAPIView.as_view(), name='book-detail'),
+    # Router URLs (for authors)
+    path('', include(router.urls)), 
+    
+    # Books - Combined List and Create
+    path('books/', BookListCreateAPIView.as_view(), name='book-list'), 
+    
+    # Books - Detail, Update, Destroy
+    path('books/<int:pk>/', BookDetailAPIView.as_view(), name='book-detail'),
 ]

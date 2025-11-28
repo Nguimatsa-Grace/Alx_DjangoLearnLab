@@ -7,7 +7,6 @@ from django.utils import timezone
 
 # --- URL NAMES CONFIRMED FROM USER'S urls.py ---
 # book-list: GET /books/ (List, Search, Filter, Order)
-# book-create: POST /books/create/ (Create)
 # book-detail: GET, PUT, PATCH, DELETE /books/<int:pk>/ (Detail/Modify)
 # ---
 
@@ -16,9 +15,8 @@ class AuthorAPITestCase(APITestCase):
     Tests for the AuthorViewSet. Ensures basic CRUD operations and permissions.
     """
     def setUp(self):
-        # 1. Create Users
+        # Create user and author
         self.staff_user = User.objects.create_user(username='staffuser', password='password123', is_staff=True)
-        # 2. Create Author
         self.author = Author.objects.create(name="H. G. Wells")
         
         self.list_url = reverse('author-list') 
@@ -76,8 +74,8 @@ class BookAPITestCase(APITestCase):
         )
 
         # 4. URLs
-        self.list_url = reverse('book-list')           # GET
-        self.create_url = reverse('book-create')       # POST
+        self.list_url = reverse('book-list')           # GET and POST (now combined)
+        # Note: No separate create_url needed, as POST goes to list_url
         self.detail_url = reverse('book-detail', args=[self.book1.id]) # GET, PUT, PATCH, DELETE
 
         # Payload structure for POST requests
@@ -95,11 +93,10 @@ class BookAPITestCase(APITestCase):
     def test_list_books_unauthenticated_returns_200(self):
         """
         Ensure all users (unauthenticated) can view the list of books (GET 200).
-        (FIXED: Checking the direct array data)
         """
         response = self.client.get(self.list_url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        # FIX: Assert that the response data is a list and contains 3 items
+        # Assert that the response data is a list and contains 3 items
         self.assertIsInstance(response.data, list)
         self.assertEqual(len(response.data), 3)
 
@@ -110,9 +107,9 @@ class BookAPITestCase(APITestCase):
         self.assertEqual(response.data['title'], self.book1.title)
 
     def test_create_book_staff_user_returns_201(self):
-        """Ensure staff user can create a new book (POST 201)."""
+        """Ensure staff user can create a new book (POST 201 to the list URL)."""
         self.client.force_authenticate(user=self.staff_user)
-        response = self.client.post(self.create_url, self.new_book_data, content_type='application/json')
+        response = self.client.post(self.list_url, self.new_book_data, content_type='application/json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Book.objects.count(), 4)
 
@@ -141,9 +138,9 @@ class BookAPITestCase(APITestCase):
     # --- 2. Permission Tests (Non-Staff User) ---
 
     def test_create_book_regular_user_fails_returns_403(self):
-        """Ensure regular authenticated user is blocked from creation (POST 403)."""
+        """Ensure regular authenticated user is blocked from creation (POST 403 to the list URL)."""
         self.client.force_authenticate(user=self.regular_user)
-        response = self.client.post(self.create_url, self.new_book_data, content_type='application/json')
+        response = self.client.post(self.list_url, self.new_book_data, content_type='application/json')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN) 
         
     def test_update_book_unauthenticated_fails_returns_401(self):
@@ -174,7 +171,7 @@ class BookAPITestCase(APITestCase):
             'publication_year': self.current_year + 1, # Future year
         }
         
-        response = self.client.post(self.create_url, future_year_data, content_type='application/json')
+        response = self.client.post(self.list_url, future_year_data, content_type='application/json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         
         # Check that the specific error message for validation is returned
@@ -189,14 +186,14 @@ class BookAPITestCase(APITestCase):
         """Ensure filtering by publication_year works correctly (GET 200)."""
         response = self.client.get(self.list_url, {'publication_year': 1954})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        # FIXED: Check data length directly
+        # Check data length directly
         self.assertEqual(len(response.data), 1) 
 
     def test_searching_by_title_keyword_returns_correct_book(self):
         """Ensure searching by keyword in the title works correctly (GET 200)."""
         response = self.client.get(self.list_url, {'search': 'Darkness'})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        # FIXED: Check data length and content directly
+        # Check data length and content directly
         self.assertEqual(len(response.data), 1)
         self.assertEqual(response.data[0]['title'], "The Left Hand of Darkness")
 
@@ -204,6 +201,6 @@ class BookAPITestCase(APITestCase):
         """Ensure ordering by title in descending order works correctly (GET 200)."""
         response = self.client.get(self.list_url, {'ordering': '-title'})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        # FIXED: Check data length and content directly
+        # Check data length and content directly
         self.assertEqual(response.data[0]['title'], "The Left Hand of Darkness")
         self.assertEqual(len(response.data), 3)

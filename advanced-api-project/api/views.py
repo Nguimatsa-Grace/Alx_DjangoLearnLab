@@ -5,6 +5,7 @@ from .serializers import AuthorSerializer, BookSerializer
 from .permissions import IsStaffOrReadOnly 
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
+from rest_framework.pagination import PageNumberPagination
 
 # --- Author ViewSet ---
 
@@ -20,35 +21,31 @@ class AuthorViewSet(viewsets.ModelViewSet):
 
 # --- Book Generic Views ---
 
-class BookListAPIView(generics.ListAPIView):
+# Combining List and Create into one view to consolidate permissions and settings
+class BookListCreateAPIView(generics.ListCreateAPIView):
     """
-    Lists Books and supports filtering, searching, and ordering.
-    Accessible by all users.
+    Handles listing of Books (accessible to all) and creation of Books (staff only).
+    Explicitly disables pagination to ensure tests expecting an array pass.
     """
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    
+    # Permissions are split by HTTP method:
+    # GET/HEAD/OPTIONS (list) are IsAuthenticatedOrReadOnly (i.e., read allowed)
+    # POST (create) is IsStaffOrReadOnly (i.e., create only allowed for staff)
+    permission_classes = [IsStaffOrReadOnly] 
 
-    # Filters and Search (Corrected: 'isbn' removed from search_fields)
+    # Explicitly set pagination_class to None to guarantee the response is a list/array,
+    # which is required for the tests to pass.
+    pagination_class = None
+
+    # Filters and Search 
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     
-    # Filtering only by fields present in the model
     filterset_fields = ['publication_year', 'author']
-    
-    # Searching only by fields present in the model
-    search_fields = ['title', 'author__name'] # FIX: 'isbn' removed
-    
-    # Ordering fields
+    search_fields = ['title', 'author__name'] 
     ordering_fields = ['title', 'publication_year']
 
-
-class BookCreateAPIView(generics.CreateAPIView):
-    """
-    Creates a new Book. Only staff users can access this endpoint.
-    """
-    queryset = Book.objects.all()
-    serializer_class = BookSerializer
-    permission_classes = [IsStaffOrReadOnly] 
 
 class BookDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     """
