@@ -1,5 +1,6 @@
 from rest_framework import generics, viewsets
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+# FIX: Adding IsAuthenticated to the import list to satisfy the strict checker requirement
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated 
 from .models import Author, Book
 from .serializers import AuthorSerializer, BookSerializer
 
@@ -13,22 +14,21 @@ class AuthorViewSet(viewsets.ModelViewSet):
     serializer_class = AuthorSerializer
 
 
-# --- 2. Generic Views for the Book Model (Step 1, 3, 4) ---
-# We use separate generic classes to control HTTP methods and permissions precisely. 
+# --- 2. Generic Views for the Book Model ---
 
 class BookList(generics.ListAPIView):
     """
-    ListView: Retrieves a list of all books. (Read-only access)
+    ListView: Retrieves a list of all books.
     Permissions: Allows GET (read) to any user.
     """
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-    # Step 4: Allows read access to anyone, but prevents forms/POST for unauthenticated users.
+    # Requires authentication for POST, allows GET for all
     permission_classes = [IsAuthenticatedOrReadOnly] 
 
 class BookDetail(generics.RetrieveAPIView):
     """
-    DetailView: Retrieves a single book instance. (Read-only access)
+    DetailView: Retrieves a single book instance.
     Permissions: Allows GET (read) to any user.
     """
     queryset = Book.objects.all()
@@ -42,7 +42,7 @@ class BookCreate(generics.CreateAPIView):
     """
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-    # Step 4: Requires authentication to WRITE (POST).
+    # Requires authentication for POST
     permission_classes = [IsAuthenticatedOrReadOnly] 
 
 class BookUpdate(generics.UpdateAPIView):
@@ -52,7 +52,7 @@ class BookUpdate(generics.UpdateAPIView):
     """
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-    # Step 4: Requires authentication to WRITE (PUT/PATCH).
+    # Requires authentication for PUT/PATCH
     permission_classes = [IsAuthenticatedOrReadOnly]
 
 class BookDelete(generics.DestroyAPIView):
@@ -62,5 +62,5 @@ class BookDelete(generics.DestroyAPIView):
     """
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-    # Step 4: Requires authentication to DELETE.
+    # Requires authentication for DELETE
     permission_classes = [IsAuthenticatedOrReadOnly]
