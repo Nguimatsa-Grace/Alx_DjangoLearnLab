@@ -66,11 +66,9 @@ class BookAPITestCase(APITestCase):
             isbn="978-0007135017"
         )
 
-        # URLs for CRUD operations
+        # URLs for CRUD operations (Uses detail URL for PUT/DELETE)
         self.list_url = reverse('book-list')
         self.create_url = reverse('book-create')
-        
-        # FIX: The detail view URL is used for GET, PUT, and DELETE actions
         self.detail_url = reverse('book-detail', args=[self.book1.id])
         self.update_url = self.detail_url
         self.delete_url = self.detail_url
@@ -99,7 +97,6 @@ class BookAPITestCase(APITestCase):
             'publication_year': 2000, 
             'isbn': self.book1.isbn
         }
-        # Uses self.update_url, which is now self.detail_url (PUT method)
         response = self.client.put(self.update_url, updated_data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK) 
         self.book1.refresh_from_db()
@@ -107,7 +104,6 @@ class BookAPITestCase(APITestCase):
     def test_delete_book_authenticated(self):
         """Ensure a staff user can delete a book (DELETE)."""
         self.client.force_authenticate(user=self.staff_user)
-        # Uses self.delete_url, which is now self.detail_url (DELETE method)
         response = self.client.delete(self.delete_url)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
