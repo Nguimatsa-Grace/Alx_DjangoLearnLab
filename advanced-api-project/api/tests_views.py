@@ -6,35 +6,40 @@ from django.urls import reverse
 
 class AuthorAPITestCase(APITestCase):
     """
-    Tests for the AuthorViewSet. Ensures basic CRUD operations and permissions.
+    Tests for the AuthorViewSet. Ensures basic CRUD operations and permissions
+    using the IsStaffOrReadOnly custom permission class.
     """
     def setUp(self):
+        # Setup a staff user (for write permissions) and a regular author object
         self.staff_user = User.objects.create_user(username='staffuser', password='password123', is_staff=True)
-        self.list_url = reverse('author-list') 
         self.author = Author.objects.create(name="H. G. Wells", birth_year=1866)
+        
+        # URL reversals (assumes standard router configuration for ViewSets)
+        self.list_url = reverse('author-list') 
         self.detail_url = reverse('author-detail', args=[self.author.id]) 
 
     def test_author_list_read_only(self):
-        """Ensure unauthenticated users can view the list of authors (GET)."""
+        """Ensure unauthenticated users can view the list of authors (GET 200)."""
         response = self.client.get(self.list_url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_author_create_authenticated(self):
-        """Ensure only staff users can create an author (POST)."""
+        """Ensure only staff users can create an author (POST 201)."""
         self.client.force_authenticate(user=self.staff_user)
         data = {'name': 'Jules Verne', 'birth_year': 1828}
         response = self.client.post(self.list_url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Author.objects.count(), 2)
 
     def test_author_delete_unauthenticated_fails(self):
-        """Ensure unauthenticated users cannot delete an author (DELETE)."""
+        """Ensure unauthenticated users cannot delete an author (DELETE 403)."""
         response = self.client.delete(self.detail_url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
 
 class BookAPITestCase(APITestCase):
     """
-    Comprehensive unit tests for the Book model's generic API views,
+    Comprehensive unit tests for the Book API views (List, Create, Detail),
     covering CRUD, permissions, filtering, searching, and ordering.
     """
     def setUp(self):
@@ -66,18 +71,18 @@ class BookAPITestCase(APITestCase):
             isbn="978-0007135017"
         )
 
-        # URLs for CRUD operations (Uses detail URL for PUT/DELETE)
+        # URLs for CRUD operations (Crucial Fix: Use book-detail for PUT/DELETE)
         self.list_url = reverse('book-list')
         self.create_url = reverse('book-create')
         self.detail_url = reverse('book-detail', args=[self.book1.id])
-        self.update_url = self.detail_url
-        self.delete_url = self.detail_url
+        self.update_url = self.detail_url # PUT/DELETE use the detail URL
+        self.delete_url = self.detail_url # PUT/DELETE use the detail URL
 
 
-    # --- 1. CRUD Tests for Book Model ---
+    # --- 1. CRUD Tests (Staff User) ---
 
     def test_create_book_authenticated(self):
-        """Ensure a staff user can create a new book (POST)."""
+        """Ensure a staff user can create a new book (POST 201)."""
         self.client.force_authenticate(user=self.staff_user)
         data = {
             'title': 'The Robots of Dawn',
@@ -89,10 +94,11 @@ class BookAPITestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_update_book_authenticated(self):
-        """Ensure a staff user can update an existing book (PUT)."""
+        """Ensure a staff user can update an existing book (PUT 200)."""
         self.client.force_authenticate(user=self.staff_user)
+        updated_title = 'Foundation Updated'
         updated_data = {
-            'title': 'Foundation Updated',
+            'title': updated_title,
             'author': self.author_a.id,
             'publication_year': 2000, 
             'isbn': self.book1.isbn
@@ -100,18 +106,20 @@ class BookAPITestCase(APITestCase):
         response = self.client.put(self.update_url, updated_data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK) 
         self.book1.refresh_from_db()
+        self.assertEqual(self.book1.title, updated_title)
 
     def test_delete_book_authenticated(self):
-        """Ensure a staff user can delete a book (DELETE)."""
+        """Ensure a staff user can delete a book (DELETE 204)."""
         self.client.force_authenticate(user=self.staff_user)
         response = self.client.delete(self.delete_url)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(Book.objects.count(), 2) # Check that the count decreased
 
 
-    # --- 2. Permission Tests (IsAuthenticatedOrReadOnly) ---
+    # --- 2. Permission Tests (Unauthenticated/Regular User) ---
 
     def test_create_book_unauthenticated_fails(self):
-        """Ensure unauthenticated users are blocked from creation (POST)."""
+        """Ensure unauthenticated users are blocked from creation (POST 403)."""
         data = {
             'title': 'Test Book', 
             'author': self.author_a.id, 
@@ -121,7 +129,7 @@ class BookAPITestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN) 
         
     def test_update_book_regular_user_fails(self):
-        """Ensure non-staff users are blocked from updates (PUT)."""
+        """Ensure non-staff users are blocked from updates (PUT 403)."""
         self.client.force_authenticate(user=self.regular_user)
         updated_data = {
             'title': 'Foundation Updated',
@@ -133,22 +141,23 @@ class BookAPITestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         
     def test_delete_book_unauthenticated_fails(self):
-        """Ensure unauthenticated users are blocked from deletion (DELETE)."""
+        """Ensure unauthenticated users are blocked from deletion (DELETE 403)."""
         response = self.client.delete(self.delete_url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
 
-    # --- 3. Filtering, Searching, and Ordering Tests (Task 2 verification) ---
+    # --- 3. Filtering, Searching, and Ordering Tests ---
 
     def test_filtering_by_publication_year(self):
         """Ensure filtering by publication_year works correctly."""
         response = self.client.get(self.list_url, {'publication_year': 1954})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]['title'], self.book2.title)
 
     def test_searching_by_title_keyword(self):
         """Ensure searching by keyword in the title works correctly."""
-        response = self.client.get(self.list_url, {'search': 'Hand'})
+        response = self.client.get(self.list_url, {'search': 'Darkness'})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
 

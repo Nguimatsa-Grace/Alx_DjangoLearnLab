@@ -11,12 +11,7 @@ urlpatterns = [
     path('', include(router.urls)),
 
     # Explicit URLs for Book views to match the test naming convention exactly
-    # List (GET) and Filtering/Ordering
     path('books/', views.BookListAPIView.as_view(), name='book-list'), 
-    
-    # Create (POST)
     path('books/create/', views.BookCreateAPIView.as_view(), name='book-create'), 
-    
-    # Detail (GET, PUT, DELETE)
     path('books/<int:pk>/', views.BookDetailAPIView.as_view(), name='book-detail'),
 ]
