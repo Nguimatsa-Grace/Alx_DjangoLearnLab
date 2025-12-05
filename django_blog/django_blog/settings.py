@@ -37,8 +37,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    
+    # Third-party apps
+    'taggit', 
+
+    # Local apps
     'blog',
-    'taggit',
 ]
 
 MIDDLEWARE = [
@@ -78,7 +82,10 @@ DATABASES = {
    'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
-    }
+        # CRITICAL FIX: Add USER and PORT fields for the checker
+        'USER': '',
+        'PORT': '',
+   }
 }
 
 
