@@ -8,8 +8,8 @@ from .views import (
     CommentCreateView, 
     CommentUpdateView,
     CommentDeleteView,
-    PostTagListView,      # <-- NEW IMPORT for viewing posts by tag
-    SearchResultsListView, # <-- NEW IMPORT for handling search queries
+    PostTagListView,      # Handles posts filtered by tag slug
+    SearchResultsListView, # Handles keyword search queries
 )
 
 urlpatterns = [
@@ -25,10 +25,7 @@ urlpatterns = [
     path('comment/<int:pk>/update/', CommentUpdateView.as_view(), name='comment_update'),
     path('comment/<int:pk>/delete/', CommentDeleteView.as_view(), name='comment_delete'),
 
-    # New Feature URLs
-    # Maps URL like /tags/python-tutorial/ to PostTagListView
+    # New Feature URLs (Ensuring correct URL patterns)
     path('tags/<slug:tag_slug>/', PostTagListView.as_view(), name='posts_by_tag'), 
-    
-    # Maps URL like /search/?q=keyword to SearchResultsListView
     path('search/', SearchResultsListView.as_view(), name='search_results'),          
 ]
