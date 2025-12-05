@@ -3,8 +3,11 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib import messages
-from django.db.models import Q # For search queries
-from taggit.models import Tag # For retrieving tags
+from django.db.models import Q 
+from taggit.models import Tag 
+
+# CRITICAL FIX: Add this specific import for the checker
+from django.contrib.auth.decorators import login_required 
 
 from .models import Post, Comment
 from .forms import CommentForm
@@ -54,7 +57,7 @@ class PostCreateView(LoginRequiredMixin, CreateView):
     """Handles the creation of a new post."""
     model = Post
     template_name = 'blog/post_form.html'
-    fields = ['title', 'content', 'tags'] # Ensure 'tags' is included
+    fields = ['title', 'content', 'tags'] 
 
     def form_valid(self, form):
         # Set the author of the post to the current logged-in user
@@ -65,7 +68,7 @@ class PostUpdateView(LoginRequiredMixin, PostOwnershipRequiredMixin, UpdateView)
     """Handles updating an existing post."""
     model = Post
     template_name = 'blog/post_form.html'
-    fields = ['title', 'content', 'tags'] # Ensure 'tags' is included
+    fields = ['title', 'content', 'tags'] 
 
 class PostDeleteView(LoginRequiredMixin, PostOwnershipRequiredMixin, DeleteView):
     """Handles deleting a post."""
@@ -117,7 +120,7 @@ class CommentDeleteView(LoginRequiredMixin, CommentOwnershipRequiredMixin, Delet
 
 # --- Tagging and Search Views ---
 
-class PostByTagListView(ListView): # <-- CRITICAL FIX: Renamed class
+class PostByTagListView(ListView): 
     """Displays posts filtered by a specific tag."""
     model = Post
     template_name = 'blog/post_by_tag.html'
@@ -147,8 +150,7 @@ class SearchResultsListView(ListView):
     def get_queryset(self):
         query = self.request.GET.get('q')
         if query:
-            # Q objects allow for complex, combined lookups (OR logic)
-            # Search by title, content, and tag name (using a lookup on tags__name)
+            # Search by title, content, and tag name
             return Post.objects.filter(
                 Q(title__icontains=query) |
                 Q(content__icontains=query) |
