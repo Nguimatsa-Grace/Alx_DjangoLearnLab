@@ -1,4 +1,4 @@
-# File: blog/views.py (COMPLETE)
+# File: blog/views.py (COMPLETE - No changes required)
 
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
