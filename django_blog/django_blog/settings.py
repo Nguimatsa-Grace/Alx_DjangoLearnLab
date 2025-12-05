@@ -74,12 +74,12 @@ WSGI_APPLICATION = 'django_blog.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
+   'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'django_blog_db', # Placeholder database name
-        'USER': 'blog_user',       # The check is looking for this key
-        'PASSWORD': 'your_password', # Placeholder password
-        'HOST': 'localhost',       # Placeholder host
+        'NAME': 'django_blog_db',
+        'USER': 'blog_user',       
+        'PASSWORD': 'your_password', 
+        'HOST': 'localhost',       
         'PORT': '5432',
     }
 }
