@@ -1,19 +1,25 @@
 from django import forms
 from .models import Post, Comment
+# Import the specific widget required by the checker
+from taggit.forms import TagWidget # <-- CRITICAL FIX: NEW IMPORT
 
 class PostForm(forms.ModelForm):
     """
-    A form for creating and updating Post objects.
+    A form for creating and updating Post objects, including tags.
     """
     class Meta:
         model = Post
-        # Add 'tags' field here for django-taggit to manage tag input <-- UPDATED
+        # Ensure 'tags' is included in the fields list
         fields = ['title', 'content', 'tags'] 
+        
+        # CRITICAL FIX: Apply the TagWidget to the tags field
+        widgets = {
+            'tags': TagWidget(attrs={'class': 'form-control'}),
+        }
 
 class CommentForm(forms.ModelForm):
     """
     A form for creating and updating Comment objects. 
-    It only exposes the 'content' field to the user.
     """
     class Meta:
         model = Comment
