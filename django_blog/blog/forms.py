@@ -7,8 +7,8 @@ class PostForm(forms.ModelForm):
     """
     class Meta:
         model = Post
-        # We only let users edit title and content; author is set automatically.
-        fields = ['title', 'content'] 
+        # Add 'tags' field here for django-taggit to manage tag input <-- UPDATED
+        fields = ['title', 'content', 'tags'] 
 
 class CommentForm(forms.ModelForm):
     """
@@ -18,7 +18,6 @@ class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
         fields = ['content']
-        # Customize the widget for better presentation
         widgets = {
             'content': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Write your comment here...'}),
         }
