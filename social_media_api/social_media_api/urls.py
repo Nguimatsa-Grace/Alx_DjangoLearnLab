@@ -1,4 +1,4 @@
-# social_media_api/urls.py (Corrected)
+# social_media_api/urls.py
 
 from django.contrib import admin
 from django.urls import path, include
@@ -11,6 +11,9 @@ urlpatterns = [
     path('auth/', include('djoser.urls')),
     path('auth/', include('djoser.urls.authtoken')),
 
-    # API Endpoints for Posts and Comments (This line should resolve the error)
+    # API Endpoints for Follows and Users (accessible at /api/users/)
+    path('api/', include('accounts.urls')), 
+
+    # API Endpoints for Posts and Comments (accessible at /posts/, etc.)
     path('', include('posts.urls')), 
 ]
