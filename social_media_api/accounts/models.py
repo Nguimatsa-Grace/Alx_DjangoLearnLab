@@ -2,11 +2,11 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 class CustomUser(AbstractUser):
-    # Requirement for Task 0: bio must be models.TextField
+    # Field names and types required by Task 0 and Task 2
     bio = models.TextField(blank=True, null=True)
     profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
     
-    # Task 0 asks for 'followers', Task 2 asks for 'following'
+    # followers for Task 0, following for Task 2
     followers = models.ManyToManyField('self', symmetrical=False, blank=True, related_name='user_followers')
     following = models.ManyToManyField('self', symmetrical=False, blank=True, related_name='user_following')
 
