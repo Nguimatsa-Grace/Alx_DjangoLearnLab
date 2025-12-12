@@ -1,27 +1,14 @@
-# accounts/models.py
-
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 class CustomUser(AbstractUser):
-    # Standard AbstractUser fields (username, email, password, etc.) are included automatically.
-
-    # This field creates the many-to-many relationship for following.
-    # 'self' refers to the CustomUser model itself.
-    # 'symmetrical=False' means if A follows B, B does not automatically follow A.
-    # 'related_name' allows us to find who follows a user (e.g., user.followers.all())
-    following = models.ManyToManyField(
-        'self', 
-        symmetrical=False, 
-        related_name='followers', 
-        blank=True
-    )
-    
-    # You can add other custom fields here if needed, like 'profile_picture'
+    # Requirement for Task 0: bio must be models.TextField
+    bio = models.TextField(blank=True, null=True)
     profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
+    
+    # Task 0 asks for 'followers', Task 2 asks for 'following'
+    followers = models.ManyToManyField('self', symmetrical=False, blank=True, related_name='user_followers')
+    following = models.ManyToManyField('self', symmetrical=False, blank=True, related_name='user_following')
 
     def __str__(self):
         return self.username
-
-    class Meta:
-        ordering = ['username']
