@@ -15,8 +15,7 @@ from .serializers import (
     CustomUserSerializer            # Corrected from CustomUserDetailSerializer
 )
 from .models import CustomUser
-from notifications.models import Notification 
-
+from social_notifications.models import Notification
 # --- ORIGINAL VIEWS (KEPT) ---
 
 # API View for User Registration

@@ -18,22 +18,20 @@ INSTALLED_APPS = [
     # Default Django apps
     'django.contrib.admin',
     'django.contrib.auth',
-    'django.contrib.contenttypes',
+    'django.contrib.contenttypes', # Required for GenericForeignKey
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
-    # --- CRITICAL FIX: ADD django.contrib.sites ---
-    'django.contrib.sites', 
+    'django.contrib.sites',        # Required for many DRF features/notifications
     
     # Third-party apps
     'rest_framework',
-    'rest_framework.authtoken', # Required for Token Authentication
-    'notifications', 
+    'rest_framework.authtoken',
     
     # Local apps
     'accounts',
     'posts', 
+    'social_notifications',       # This is the app we created successfully
 ]
 
 MIDDLEWARE = [
@@ -75,18 +73,10 @@ DATABASES = {
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',},
 ]
 
 # Internationalization
@@ -101,39 +91,27 @@ STATIC_URL = 'static/'
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
 # ----------------------------------------------------
 # Custom Configurations
 # ----------------------------------------------------
 
-# Specify the custom user model for Django
+# Specify the custom user model
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
-# --- CRITICAL FIX: SET SITE_ID ---
-# Required for django.contrib.sites to work
+# Required for django.contrib.sites
 SITE_ID = 1
-
-# Setting for third-party packages that rely on the user model (like comments)
-COMMENTS_USER_MODEL = 'accounts.CustomUser'
 
 # Django REST Framework Settings
 REST_FRAMEWORK = {
-    # Authentication (Token and Session for Browsable API)
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
-        'rest_framework.authentication.SessionAuthentication', # Allows login in browsable API
+        'rest_framework.authentication.SessionAuthentication',
     ),
-    
-    # Permissions (Allows anyone to view, but requires login to create/edit)
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticatedOrReadOnly',
     ),
-    
-    # Pagination (Step 5)
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10,
-    
-    # Filtering (Step 5)
     'DEFAULT_FILTER_BACKENDS': (
         'rest_framework.filters.SearchFilter',
         'rest_framework.filters.OrderingFilter',

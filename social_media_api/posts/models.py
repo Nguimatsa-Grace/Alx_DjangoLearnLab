@@ -1,10 +1,5 @@
-# posts/models.py (UPDATED with Like Model)
-
 from django.db import models
 from django.conf import settings
-from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes.fields import GenericForeignKey
-
 
 class Post(models.Model):
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='posts')
@@ -31,19 +26,17 @@ class Comment(models.Model):
     def __str__(self):
         return f'Comment by {self.author.username} on {self.post.title}'
 
-# --- NEW MODEL FOR LIKES ---
 class Like(models.Model):
     """
-    Model to track which users have liked which posts.
+    Tracks which users have liked which posts.
     """
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='likes')
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='likes')
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        # Ensures a user can only like a post once
+        # This constraint ensures a user can't like the same post more than once
         unique_together = ('user', 'post')
-        ordering = ['-created_at']
 
     def __str__(self):
-        return f'{self.user.username} likes {self.post.title}'
+        return f'{self.user.username} liked {self.post.title}'
