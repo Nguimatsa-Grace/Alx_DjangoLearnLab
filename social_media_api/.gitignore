@@ -1,0 +1,19 @@
+# Compiled Python files
+*.pyc
+__pycache__/
+
+# Databases
+*.sqlite3
+/db.sqlite3
+
+# Virtual environment
+venv/
+.venv/
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+
+# Django specific
+/static/
+/media/

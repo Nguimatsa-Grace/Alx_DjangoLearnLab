@@ -1,15 +1,14 @@
-# posts/urls.py (INCLUDING FeedViewSet ROUTE)
+# posts/urls.py (UPDATED with Like/Unlike Routes)
 
 from django.urls import path, include
 from rest_framework_nested import routers
-from .views import PostViewSet, CommentViewSet, FeedViewSet # <-- ADDED FeedViewSet
+from .views import PostViewSet, CommentViewSet, FeedViewSet, LikePostView, UnlikePostView # <-- IMPORTED LIKE VIEWS
 
 # Main router for posts
 router = routers.SimpleRouter()
 router.register(r'posts', PostViewSet)
 
 # Register the FeedViewSet to create the /feed/ endpoint
-# We use base_name='feed' and an empty prefix '' to put it at the root of the posts app's include.
 router.register(r'feed', FeedViewSet, basename='feed') 
 
 # Nested router for comments (under posts)
@@ -21,4 +20,8 @@ urlpatterns = [
     path('', include(router.urls)),
     # Includes /posts/{post_pk}/comments/ routes
     path('', include(posts_router.urls)),
+
+    # --- NEW ROUTES FOR LIKES ---
+    path('posts/<int:pk>/like/', LikePostView.as_view(), name='post-like'),
+    path('posts/<int:pk>/unlike/', UnlikePostView.as_view(), name='post-unlike'),
 ]

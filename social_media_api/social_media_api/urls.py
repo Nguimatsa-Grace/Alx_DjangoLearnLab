@@ -16,4 +16,6 @@ urlpatterns = [
 
     # API Endpoints for Posts and Comments (accessible at /posts/, etc.)
     path('', include('posts.urls')), 
+    # NEW API URL FOR NOTIFICATIONS
+    path('notifications/', include('notifications.urls')),
 ]

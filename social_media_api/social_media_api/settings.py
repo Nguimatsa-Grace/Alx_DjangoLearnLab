@@ -23,13 +23,17 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     
+    # --- CRITICAL FIX: ADD django.contrib.sites ---
+    'django.contrib.sites', 
+    
     # Third-party apps
     'rest_framework',
     'rest_framework.authtoken', # Required for Token Authentication
+    'notifications', 
     
     # Local apps
     'accounts',
-    'posts', # <-- Your new app
+    'posts', 
 ]
 
 MIDDLEWARE = [
@@ -105,6 +109,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Specify the custom user model for Django
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
+# --- CRITICAL FIX: SET SITE_ID ---
+# Required for django.contrib.sites to work
+SITE_ID = 1
+
+# Setting for third-party packages that rely on the user model (like comments)
+COMMENTS_USER_MODEL = 'accounts.CustomUser'
 
 # Django REST Framework Settings
 REST_FRAMEWORK = {
