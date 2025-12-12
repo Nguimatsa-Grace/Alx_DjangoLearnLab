@@ -31,7 +31,7 @@ INSTALLED_APPS = [
     # Local apps
     'accounts',
     'posts', 
-    'social_notifications',       # This is the app we created successfully
+    'notifications',       # This is the app we created successfully
 ]
 
 MIDDLEWARE = [
